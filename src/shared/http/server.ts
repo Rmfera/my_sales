@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "reflect-metadata";
 import "express-async-errors";
 import express from "express";
@@ -8,7 +7,6 @@ import cors from "cors";
 import routes from "./routes";
 import ErrorHandleMiddleware from "@shared/middlewares/ErrorHandleMiddleware";
 import { AppDataSource } from "@shared/typeorm/data-source";
-import { error } from "console";
 
 AppDataSource.initialize()
   .then(async () => {
