@@ -37,7 +37,9 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/uuid": "^10.0.0",
+    "bcrypt": "^6.0.0",
     "celebrate": "^15.0.3",
     "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
