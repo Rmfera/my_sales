@@ -2,6 +2,7 @@ import "reflect-metadata";
 import "express-async-errors";
 import express from "express";
 import cors from "cors";
+import { errors } from "celebrate";
 
 // Como é o arquivo index que possui routes não é necessário colocar "./routes/index.ts"
 import routes from "./routes";
@@ -16,6 +17,7 @@ AppDataSource.initialize()
     app.use(express.json());
 
     app.use(routes);
+    app.use(errors());
     app.use(ErrorHandleMiddleware.handleError);
     console.log("Connect to the database! 🏆");
     app.listen(3333, () => {
