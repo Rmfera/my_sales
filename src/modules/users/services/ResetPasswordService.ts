@@ -1,0 +1,37 @@
+import { hash } from "bcrypt";
+import { userTokensRepositories } from "../database/repositories/UserTokensRepositories";
+import AppError from "@shared/errors/AppErrors";
+import { usersRepositories } from "../database/repositories/UsersRepositories";
+import { isAfter, addHours } from "date-fns";
+
+interface IResetPassword {
+  token: string;
+  password: string;
+}
+
+export default class ResetPasswordService {
+  async execute({ token, password }: IResetPassword): Promise<void> {
+    const userToken = await userTokensRepositories.findByToken(token);
+
+    if (!userToken) {
+      throw new AppError("User token not exists.", 404);
+    }
+// user está vindo como null e não estou encontrando o problema
+    const user = await usersRepositories.findById(userToken.user_id);
+//  console.log("Teste",user?.id)
+    if (!user) {
+      throw new AppError("User token not existssss.", 404);
+    }
+
+    const tokenCreatedAt = userToken.created_at;
+    const compareDate = addHours(tokenCreatedAt, 2);
+
+    if (isAfter(Date.now(), compareDate)) {
+      throw new AppError("Token expired,", 401);
+    }
+
+    user.password = await hash(password, 10);
+
+    await usersRepositories.save(user);
+  }
+}
