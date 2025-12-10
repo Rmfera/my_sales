@@ -2,6 +2,7 @@ import AppError from "@shared/errors/AppErrors";
 import { User } from "../database/entities/User";
 import { usersRepositories } from "../database/repositories/UsersRepositories";
 
+
 interface IShowProfile {
   user_id: number;
 }
