@@ -16,11 +16,10 @@ export default class ResetPasswordService {
     if (!userToken) {
       throw new AppError("User token not exists.", 404);
     }
-// user está vindo como null e não estou encontrando o problema
+
     const user = await usersRepositories.findById(userToken.user_id);
-//  console.log("Teste",user?.id)
     if (!user) {
-      throw new AppError("User token not existssss.", 404);
+      throw new AppError("User token not exists.", 404);
     }
 
     const tokenCreatedAt = userToken.created_at;
