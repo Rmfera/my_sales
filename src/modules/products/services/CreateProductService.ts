@@ -1,6 +1,7 @@
 import AppError from "@shared/errors/AppErrors";
 import { productsRepositories } from "../database/repositories/ProductsRepositories";
 import { Product } from "../database/entities/Product";
+import RedisCache from "@shared/cache/RedisCache";
 
 interface ICreateProduct {
   name: string;
@@ -10,6 +11,7 @@ interface ICreateProduct {
 
 export default class CreateProductService {
   async execute({ name, price, quantity }: ICreateProduct): Promise<Product> {
+    const redisCache = new RedisCache();
     const productsExists = await productsRepositories.findByName(name);
     if (productsExists) {
       // O 409 é um status code que significa conflito no meu banco de dados
@@ -26,6 +28,9 @@ export default class CreateProductService {
 
     // Este método salva o objeto no banco de dados, tem o await, pois precisa aguardar a resposta do banco de dados
     await productsRepositories.save(product);
+
+    await redisCache.invalidate("api-mysales-PRODUCT_LIST");
+
     return product;
   }
 }
