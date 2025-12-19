@@ -22,4 +22,5 @@ export class Customer {
 
   @UpdateDateColumn()
   updated_at: Date;
+
 }
