@@ -1,6 +1,6 @@
 import AppError from "@shared/errors/AppErrors";
-import { Order } from "../database/entities/Order";
-import { orderRepositories } from "../database/repositories/OrderRepositories";
+import { Order } from "../infra/database/entities/Order";
+import { orderRepositories } from "../infra/database/repositories/OrderRepositories";
 
 export class ShowOrderService {
   // O professor disse que não colocou dessa forma abaixo <Order | null>, porque precisamos dar um retorno para o usuário

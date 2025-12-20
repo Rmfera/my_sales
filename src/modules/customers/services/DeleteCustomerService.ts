@@ -1,5 +1,5 @@
 import AppError from "@shared/errors/AppErrors";
-import { customerRespository } from "../database/repositories/CustomerRepositories";
+import { customerRepository } from "../infra/database/repositories/CustomerRepositories";
 
 interface IDeleteCustomer {
   id: number;
@@ -7,10 +7,10 @@ interface IDeleteCustomer {
 
 export default class DeleteCustomerService {
   public async execute({ id }: IDeleteCustomer): Promise<void> {
-    const customer = await customerRespository.findById(id);
+    const customer = await customerRepository.findById(id);
     if (!customer) {
       throw new AppError("Customer not found.", 404);
     }
-    await customerRespository.remove(customer);
+    await customerRepository.remove(customer);
   }
 }

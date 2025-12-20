@@ -1,6 +1,7 @@
-import AppError from "@shared/errors/AppErrors";
-import { productsRepositories } from "../database/repositories/ProductsRepositories";
 import RedisCache from "@shared/cache/RedisCache";
+import { productsRepositories } from "../infra/database/repositories/ProductsRepositories";
+import AppError from "@shared/errors/AppErrors";
+
 
 interface IDeleteProduct {
   id: string;
