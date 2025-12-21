@@ -4,8 +4,10 @@ import express from "express";
 import cors from "cors";
 import { errors } from "celebrate";
 
-// Como é o arquivo index que possui routes não é necessário colocar "./routes/index.ts"
+// Como o nome do arquivo que está dentro de container é o index.ts, não precisa mencionar ele
+import "@shared/container";
 
+// Como é o arquivo index que possui routes não é necessário colocar "./routes/index.ts"
 import ErrorHandleMiddleware from "@shared/middlewares/ErrorHandleMiddleware";
 import { AppDataSource } from "@shared/infra/typeorm/data-source";
 import routes from "./routes";

@@ -14,6 +14,7 @@ export const userTokensRepositories = AppDataSource.getRepository(
       user_id,
     });
     await this.save(userToken);
+
     return userToken;
   },
 });

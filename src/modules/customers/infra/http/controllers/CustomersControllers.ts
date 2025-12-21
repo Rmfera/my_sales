@@ -4,6 +4,7 @@ import ListCustomerService from "@modules/customers/services/ListCustomersServic
 import ShowCustomerService from "@modules/customers/services/ShowCustomerServices";
 import UpdateCustomerService from "@modules/customers/services/UpdateCustomerService";
 import { Request, Response } from "express";
+import { container } from "tsyringe";
 
 
 export default class CustomerControllers {
@@ -24,7 +25,8 @@ export default class CustomerControllers {
 
   async create(request: Request, response: Response): Promise<Response> {
     const { name, email } = request.body;
-    const createCustomer = new CreateCustomerService();
+     const createCustomer = container.resolve(CreateCustomerService);
+    // const createCustomer = new CreateCustomerService();
     const customer = await createCustomer.execute({
       name,
       email,

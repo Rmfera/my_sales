@@ -10,7 +10,7 @@ export default class SessionsControllers {
       email,
       password,
     });
-console.log({userToken})
+
     return response.json(userToken);
   }
 }

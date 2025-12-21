@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 import { Exclude, Expose } from "class-transformer";
@@ -28,7 +29,7 @@ export class User {
   @CreateDateColumn()
   created_at: Date;
 
-  @CreateDateColumn()
+   @UpdateDateColumn()
   updated_at: Date;
 
   @Expose({ name: "avatar_url" })
