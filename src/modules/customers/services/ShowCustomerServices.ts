@@ -2,13 +2,16 @@ import AppError from "@shared/errors/AppErrors";
 
 import { Customer } from "../infra/database/entities/Customer";
 import { ICustomersRepository } from "../domain/repositories/ICustomersRepositories";
+import { inject, injectable } from "tsyringe";
 
 interface IShowCustomer {
   id: number;
 }
-
+@injectable()
 export default class ShowCustomerService {
-  constructor(private readonly customerRepository: ICustomersRepository) {}
+  constructor(
+    @inject('CustomerRepository')
+    private readonly customerRepository: ICustomersRepository) {}
   public async execute({ id }: IShowCustomer): Promise<Customer> {
     const customer = await this.customerRepository.findById(id);
 
