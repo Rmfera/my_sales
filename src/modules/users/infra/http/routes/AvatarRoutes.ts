@@ -1,11 +1,11 @@
 import { Router } from "express";
-import UpdateAvatarControllers from "../controllers/UpdateAvatarControllers";
 import multer from "multer";
 import uploadConfig from "@config/upload";
 import AuthMiddleware from "@shared/middlewares/authMiddleware";
+import UserAvatarController from "../controllers/UserAvatarController";
 
 const avatarRouter = Router();
-const userAvatarController = new UpdateAvatarControllers();
+const userAvatarController = new UserAvatarController();
 const upload = multer(uploadConfig);
 
 // Observe abaixo esta parte: upload.single('avatar'), será o arquivo que vamos fazer o upload, no caso um único arquivo

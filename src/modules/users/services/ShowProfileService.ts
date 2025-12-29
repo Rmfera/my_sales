@@ -1,20 +1,26 @@
-import AppError from "@shared/errors/AppErrors";
-import { User } from "../infra/database/entities/User";
-import { usersRepositories } from "../infra/database/repositories/UsersRepositories";
+import { IUsersRepository } from '../domain/repositories/IUserRepositories';
+import { inject } from 'tsyringe';
+import { User } from '../infra/database/entities/User';
+import AppError from '@shared/errors/AppErrors';
 
-
-interface IShowProfile {
-  user_id: number;
+interface IRequest {
+  user_id: string;
 }
 
-export default class ShowProfileService {
-  async execute({ user_id }: IShowProfile): Promise<User> {
-    const user = await usersRepositories.findById(user_id);
+class ShowProfileService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+  public async execute({ user_id }: IRequest): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
-      throw new AppError("User not found.", 404);
+      throw new AppError('User not found.', 404);
     }
 
     return user;
   }
 }
+
+export default ShowProfileService;

@@ -1,25 +1,33 @@
-import AppError from "@shared/errors/AppErrors";
-import { usersRepositories } from "../infra/database/repositories/UsersRepositories";
-import { userTokensRepositories } from "../infra/database/repositories/UserTokensRepositories";
-import { sendEmail } from "@config/email";
+import { sendEmail } from '@config/email';
+import AppError from '@shared/errors/AppErrors';
+import { inject, injectable } from 'tsyringe';
+import { IUsersRepository } from '../domain/repositories/IUserRepositories';
+import { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
 
-interface IForgotPassword {
+interface IRequest {
   email: string;
 }
+@injectable()
+class SendForgotPasswordEmailService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
 
-export default class SendForgotPasswordEmailService {
-  async execute({ email }: IForgotPassword): Promise<void> {
-    const user = await usersRepositories.findByEmail(email);
+    @inject('UserTokensRepository')
+    private userTokensRepository: IUserTokensRepository,
+  ) {}
+  public async execute({ email }: IRequest): Promise<void> {
+    const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError("User not found.", 409);
+      throw new AppError('User not exists.', 404);
     }
 
-    const token = await userTokensRepositories.generate(user.id);
+    const token = await this.userTokensRepository.generate(user.id);
 
     sendEmail({
       to: email,
-      subject: "My Sales Recovered Password",
+      subject: 'My Sales Recovery Password',
       body: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; text-align: center; border: 2px solid #041d40; border-radius: 10px; margin: auto; width: 60%;">
           <h1 style="color: #041d40;">Password Reset Verification Code</h1>
@@ -34,3 +42,5 @@ export default class SendForgotPasswordEmailService {
     });
   }
 }
+
+export default SendForgotPasswordEmailService;

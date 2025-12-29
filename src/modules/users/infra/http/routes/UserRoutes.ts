@@ -1,10 +1,10 @@
 import { Router } from "express";
-import UsersControllers from "../controllers/UsersControllers";
 import { createUserSchema } from "../schemas/UserSchemas";
 import AuthMiddleware from "@shared/middlewares/authMiddleware";
+import UsersController from "../controllers/UserController";
 
 const usersRouter = Router();
-const usersControllers = new UsersControllers();
+const usersControllers = new UsersController();
 
 usersRouter.get("/", AuthMiddleware.execute, usersControllers.index);
 usersRouter.post("/", createUserSchema, usersControllers.create);
