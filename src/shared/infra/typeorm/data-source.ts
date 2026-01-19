@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import "dotenv/config";
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 
 const port = process.env.DB_PORT as number | undefined;
 
-export const AppDataSource = new DataSource({
+const baseDataSourceOptions: DataSourceOptions = {
   type: "postgres",
   host: process.env.DB_HOST,
   port: port,
@@ -15,4 +15,14 @@ export const AppDataSource = new DataSource({
   // que tenha database/entities/ com arquivos com a extensão .ts ou .js
   entities: ["./src/modules/**/infra/database/entities/*.{ts,js}"],
   migrations: ["./src/shared/infra/typeorm/migrations/*.{ts,js}"],
-});
+};
+
+const appTestDataSourceOptions: DataSourceOptions = {
+  ...baseDataSourceOptions,
+  database: process.env.DB_NAME_TEST,
+};
+
+export const AppDataSource = new DataSource(
+  process.env.NODE_ENV === 'test'
+  ? appTestDataSourceOptions
+  : baseDataSourceOptions);
