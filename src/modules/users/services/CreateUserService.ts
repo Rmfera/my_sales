@@ -2,8 +2,9 @@ import { hash } from 'bcrypt';
 import { IUsersRepository } from '../domain/repositories/IUserRepositories';
 import { inject, injectable } from 'tsyringe';
 import 'reflect-metadata';
-import { User } from '../infra/database/entities/User';
+
 import AppError from '@shared/errors/AppErrors';
+import User from '../infra/database/entities/User';
 
 interface IRequest {
   name: string;

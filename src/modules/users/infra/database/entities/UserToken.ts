@@ -5,19 +5,19 @@ import {
   Generated,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("user_tokens")
-export default class UserToken {
+@Entity('user_tokens')
+class UserToken {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
-  @Generated("uuid")
+  @Generated('uuid')
   token: string;
 
   @Column()
-  user_id: number;
+  user_id: string;
 
   @CreateDateColumn()
   created_at: Date;
@@ -25,3 +25,5 @@ export default class UserToken {
   @UpdateDateColumn()
   updated_at: Date;
 }
+
+export default UserToken;

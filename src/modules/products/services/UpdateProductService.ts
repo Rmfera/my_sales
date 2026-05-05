@@ -1,44 +1,52 @@
-import RedisCache from "@shared/cache/RedisCache";
-import { Product } from "../infra/database/entities/Product";
-import { productsRepositories } from "../infra/database/repositories/ProductsRepositories";
-import AppError from "@shared/errors/AppErrors";
 
+import RedisCache from '@shared/cache/RedisCache';
+import { Product } from '../infra/database/entities/Product';
+import { inject, injectable } from 'tsyringe';
+import { IProductsRepository } from '../domain/repositories/IProductsRepository';
+import AppError from '@shared/errors/AppErrors';
 
-interface IUpdateProduct {
+interface IRequest {
   id: string;
   name: string;
   price: number;
   quantity: number;
 }
-
-export default class UpdateProductService {
-  async execute({
+@injectable()
+class UpdateProductService {
+  constructor(
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+  public async execute({
     id,
     name,
     price,
     quantity,
-  }: IUpdateProduct): Promise<Product> {
-    const redisCache = new RedisCache();
-    const product = await productsRepositories.findById(id);
+  }: IRequest): Promise<Product> {
+    const product = await this.productsRepository.findById(id);
 
     if (!product) {
-      throw new AppError("Product not found.", 404);
+      throw new AppError('Product not found.', 404);
     }
 
-    const productsExists = await productsRepositories.findByName(name);
+    const productExists = await this.productsRepository.findByName(name);
 
-    if (productsExists) {
-      throw new AppError("There is already one product with this name", 409);
+    if (productExists && name !== product.name) {
+      throw new AppError('There is already one product with this name');
     }
+
+    const redisCache = new RedisCache();
+
+    await redisCache.invalidate("api-mysales-PRODUCT_LIST");
 
     product.name = name;
     product.price = price;
     product.quantity = quantity;
 
-    await productsRepositories.save(product);
+    await this.productsRepository.save(product);
 
-    await redisCache.invalidate("api-mysales-PRODUCT_LIST");
-
-    return product;
+    return product as Product;
   }
 }
+
+export default UpdateProductService;

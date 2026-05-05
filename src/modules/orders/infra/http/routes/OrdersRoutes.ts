@@ -1,18 +1,19 @@
-import { Router } from "express";
-import OrdersController from "../controller/OrdersControllers";
-import AuthMiddleware from "@shared/middlewares/authMiddleware";
+import isAuthenticated from '@shared/middlewares/isAuthenticated';
+import { Router } from 'express';
+import OrdersController from '../controllers/OrdersController';
+
 import {
   createOrderValidate,
   idParamsValidate,
-} from "../schemas/OrdersSchemas";
+} from '../schemas/OrdersSchemas';
 
 const ordersRouter = Router();
 const ordersController = new OrdersController();
 
-ordersRouter.use(AuthMiddleware.execute);
-
-ordersRouter.get("/:id", idParamsValidate, ordersController.show);
-// ordersRouter.post("/", createOrderValidate, ordersController.create);
-ordersRouter.post("/", createOrderValidate, ordersController.create);
+ordersRouter.use(isAuthenticated);
+// Adicione esta linha antes ou depois das outras
+ordersRouter.get('/', ordersController.index);
+ordersRouter.get('/:id', idParamsValidate, ordersController.show);
+ordersRouter.post('/', createOrderValidate, ordersController.create);
 
 export default ordersRouter;

@@ -2,7 +2,8 @@
 import AppError from '@shared/errors/AppErrors';
 import 'reflect-metadata';
 import FakeUserRepository from '../domain/repositories/fakes/FakeUserRepositories';
-import { User } from '../infra/database/entities/User';
+import User from '../infra/database/entities/User';
+
 import CreateSessionsService from './CreateSessionService';
 
 jest.mock('bcrypt', () => ({

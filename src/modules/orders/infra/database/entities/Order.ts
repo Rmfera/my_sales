@@ -1,4 +1,4 @@
-import { Customer } from "@modules/customers/infra/database/entities/Customer";
+import Customer from '@modules/customers/infra/database/entities/Customer';
 import {
   CreateDateColumn,
   Entity,
@@ -7,19 +7,19 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { OrdersProducts } from "./OrdersProducts";
+} from 'typeorm';
+import OrdersProducts from './OrdersProducts';
 
-@Entity("orders")
-export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Entity('orders')
+class Order {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => Customer)
-  @JoinColumn({ name: "customer_id" })
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
-  @OneToMany(() => OrdersProducts, (order_products) => order_products.order, {
+  @OneToMany(() => OrdersProducts, order_products => order_products.order, {
     cascade: true,
   })
   order_products: OrdersProducts[];
@@ -30,3 +30,5 @@ export class Order {
   @UpdateDateColumn()
   updated_at: Date;
 }
+
+export default Order;

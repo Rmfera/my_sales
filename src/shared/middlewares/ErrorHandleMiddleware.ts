@@ -16,6 +16,9 @@ export default class ErrorHandleMiddleware {
       });
     }
 
+    // ADICIONE ESTA LINHA ABAIXO PARA O ERRO APARECER NO TERMINAL
+    console.error("DEBUG - Erro não tratado:", error);
+
     return res.status(500).json({
       type: "error",
       message: "Internal server error",

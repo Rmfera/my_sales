@@ -1,16 +1,16 @@
-import { ICustomer } from "@modules/customers/domain/models/ICustomer";
+import { ICustomer } from '@modules/customers/domain/models/ICustomer';
 import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("customers")
-export class Customer implements ICustomer{
+@Entity('customers')
+class Customer implements ICustomer {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   name: string;
@@ -23,5 +23,6 @@ export class Customer implements ICustomer{
 
   @UpdateDateColumn()
   updated_at: Date;
-
 }
+
+export default Customer;

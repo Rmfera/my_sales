@@ -1,4 +1,3 @@
-import { Product } from "@modules/products/infra/database/entities/Product";
 import {
   Column,
   CreateDateColumn,
@@ -7,32 +6,34 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { Order } from "./Order";
+} from 'typeorm';
 
-@Entity("orders_products")
-export class OrdersProducts {
-  @PrimaryGeneratedColumn()
-  id: number;
+import Order from './Order';
+import { Product } from '@modules/products/infra/database/entities/Product';
 
-  @ManyToOne(() => Order, (order) => order.order_products)
-  @JoinColumn({ name: "order_id" })
+@Entity('orders_products')
+class OrdersProducts {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @ManyToOne(() => Order, order => order.order_products)
+  @JoinColumn({ name: 'order_id' })
   order: Order;
+
+  @ManyToOne(() => Product, product => product.order_products)
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 
   @Column()
   order_id: string;
 
-  @ManyToOne(() => Product, (product) => product.order_products)
-  @JoinColumn({ name: "product_id" })
-  product: Product;
-
   @Column()
   product_id: string;
 
-  @Column("decimal")
+  @Column('decimal')
   price: number;
 
-  @Column("int")
+  @Column('int')
   quantity: number;
 
   @CreateDateColumn()
@@ -41,3 +42,5 @@ export class OrdersProducts {
   @UpdateDateColumn()
   updated_at: Date;
 }
+
+export default OrdersProducts;

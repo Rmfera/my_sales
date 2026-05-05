@@ -1,16 +1,26 @@
-import AppError from "@shared/errors/AppErrors";
-import { Order } from "../infra/database/entities/Order";
-import { orderRepositories } from "../infra/database/repositories/OrderRepositories";
+import { inject, injectable } from 'tsyringe';
+import { IOrdersRepository } from '../domain/repositories/IOrdersRepository';
+import { IOrder } from '../domain/models/IOrder';
+import AppError from '@shared/errors/AppErrors';
 
-export class ShowOrderService {
-  // O professor disse que não colocou dessa forma abaixo <Order | null>, porque precisamos dar um retorno para o usuário
-  async execute(id: string): Promise<Order> {
-    const order = await orderRepositories.findById(Number(id));
+interface IRequest {
+  id: string;
+}
+@injectable()
+class ShowOrderService {
+  constructor(
+    @inject('OrdersRepository')
+    private ordersRepository: IOrdersRepository,
+  ) {}
+  public async execute({ id }: IRequest): Promise<IOrder> {
+    const order = await this.ordersRepository.findById(id);
 
     if (!order) {
-      throw new AppError("Order not found.");
+      throw new AppError('Order not found.');
     }
 
     return order;
   }
 }
+
+export default ShowOrderService;

@@ -1,16 +1,11 @@
-import { ICreateCustomer } from "@modules/customers/domain/models/ICreateCustomer";
-import { ICustomer } from "@modules/customers/domain/models/ICustomer";
-import {
-  ICustomersRepository,
-  Pagination,
-} from "@modules/customers/domain/repositories/ICustomersRepositories";
-import { Repository } from "typeorm";
-import { Customer } from "../entities/Customer";
+import { AppDataSource } from '@shared/infra/typeorm/data-source';
+import Customer from '../entities/Customer';
+import { ICustomersRepository, Pagination } from '@modules/customers/domain/repositories/ICustomersRepositories';
+import { ICreateCustomer } from '@modules/customers/domain/models/ICreateCustomer';
+import { ICustomer } from '@modules/customers/domain/models/ICustomer';
+import { Repository } from 'typeorm';
 
-// Observe que o AppDataSource vem lá do arquivo data-source e este arquivo que faz conexão com o banco de dados
-import { AppDataSource } from "@shared/infra/typeorm/data-source";
-
-export default class customerRepository implements ICustomersRepository {
+export default class CustomersRepository implements ICustomersRepository {
   private ormRepository: Repository<Customer>;
 
   constructor() {
@@ -25,7 +20,7 @@ export default class customerRepository implements ICustomersRepository {
     return customer;
   }
 
-  async findById(id: number): Promise<ICustomer | null> {
+  async findById(id: string): Promise<ICustomer | null> {
     const customer = await this.ormRepository.findOneBy({
       id,
     });
@@ -61,10 +56,7 @@ export default class customerRepository implements ICustomersRepository {
     return;
   }
 
-  async findAndCount({
-    take,
-    skip,
-  }: Pagination): Promise<[ICustomer[], number]> {
+  async findAndCount({ take, skip }: Pagination): Promise<[ICustomer[], number]> {
     const [customers, total] = await this.ormRepository.findAndCount({
       take,
       skip,
@@ -73,27 +65,3 @@ export default class customerRepository implements ICustomersRepository {
     return [customers, total];
   }
 }
-
-// import { AppDataSource } from "@shared/infra/typeorm/data-source";
-// import { Customer } from "../entities/Customer";
-
-// export const customerRepository = AppDataSource.getRepository(Customer).extend(
-//   {
-//     async findByName(name: string): Promise<Customer | null> {
-//       const customer = await this.findOneBy({ name });
-//       return customer;
-//     },
-
-//     async findById(id: number): Promise<Customer | null> {
-//       const customer = await this.findOneBy({
-//         id,
-//       });
-//       return customer;
-//     },
-
-//     async findByEmail(email: string): Promise<Customer | null> {
-//       const customer = await this.findOneBy({ email });
-//       return customer;
-//     },
-//   },
-// );

@@ -4,8 +4,9 @@ import "dotenv/config";
 import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
 import { IUsersRepository } from "../domain/repositories/IUserRepositories";
-import { User } from "../infra/database/entities/User";
+
 import AppError from "@shared/errors/AppErrors";
+import User from "../infra/database/entities/User";
 
 interface IRequest {
   email: string;

@@ -1,5 +1,5 @@
 export interface IUserToken {
-  id: number;
+  id: string;
   token: string;
   user_id: string;
   created_at: Date;

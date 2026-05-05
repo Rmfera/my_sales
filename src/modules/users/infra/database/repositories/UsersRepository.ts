@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { IUsersRepository } from '@modules/users/domain/repositories/IUserRepositories';
 import { AppDataSource } from '@shared/infra/typeorm/data-source';
 import { IUser } from '@modules/users/domain/models/IUser';
-import { User } from '../entities/User';
+import User from '../entities/User';
+
 
 export type SearchParams = {
   page: number;

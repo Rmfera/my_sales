@@ -3,8 +3,9 @@ import uploadConfig from '@config/upload';
 import fs from 'fs';
 import { IUsersRepository } from '../domain/repositories/IUserRepositories';
 import { inject, injectable } from 'tsyringe';
-import { User } from '../infra/database/entities/User';
+
 import AppError from '@shared/errors/AppErrors';
+import User from '../infra/database/entities/User';
 
 interface IRequest {
   userId: string;

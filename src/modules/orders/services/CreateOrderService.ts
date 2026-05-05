@@ -1,38 +1,52 @@
-import { Product } from "@modules/products/infra/database/entities/Product";
-import { Order } from "../infra/database/entities/Order";
-import { customerRepository } from "@modules/customers/infra/database/repositories/CustomerRepositories";
-import AppError from "@shared/errors/AppErrors";
-import { productsRepositories } from "@modules/products/infra/database/repositories/ProductsRepositories";
-import { orderRepositories } from "../infra/database/repositories/OrderRepositories";
+import { inject, injectable } from 'tsyringe';
+import { IOrdersRepository } from '../domain/repositories/IOrdersRepository';
+import { ICustomersRepository } from '@modules/customers/domain/repositories/ICustomersRepositories';
+import { IOrder } from '../domain/models/IOrder';
+import AppError from '@shared/errors/AppErrors';
+import { IProductsRepository } from '@modules/products/domain/repositories/IProductsRepository';
 
-interface ICreateOrder {
-  customer_id: string;
-  products: Product[];
+interface IProduct {
+  id: string;
+  quantity: number;
 }
 
-export class CreateOrderService {
-  async execute({ customer_id, products }: ICreateOrder): Promise<Order> {
-    const customerExists = await customerRepository.findById(
-      Number(customer_id),
-    );
+interface IRequest {
+  customer_id: string;
+  products: IProduct[];
+}
+@injectable()
+class CreateOrderService {
+  constructor(
+    @inject('OrdersRepository')
+    private ordersRepository: IOrdersRepository,
+    @inject('CustomersRepository')
+    private customersRepository: ICustomersRepository,
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+  public async execute({ customer_id, products }: IRequest): Promise<IOrder> {
+    // video 1
+    const customerExists = await this.customersRepository.findById(customer_id);
 
     if (!customerExists) {
-      throw new AppError("Could not find any customer with the given id.");
+      throw new AppError('Could not find any customer with the given id.', 404);
     }
 
-    const existsProducts = await productsRepositories.findAllByIds(products);
+    const existsProducts = await this.productsRepository.findAllByIds(products);
+
     if (!existsProducts.length) {
-      throw new AppError("Could not find any products with the given ids.");
+      throw new AppError(
+        'Could not find any products with the given ids.',
+        404,
+      );
     }
-
-    const existsProductsIds = products.map((product) => product.id);
+    // video 2
+    const existsProductsIds = existsProducts.map(product => product.id);
 
     const checkInexistentProducts = products.filter(
-      (product) => !existsProductsIds.includes(product.id),
+      product => !existsProductsIds.includes(product.id),
     );
 
-    // Por causa de uma exclamação antes da condição abaixo tinha dado erro no teste da minha rota de orders no POSTMAN
-    // Ou seja, eu tinha colocado assim: if (!checkInexistentProducts.length)
     if (checkInexistentProducts.length) {
       throw new AppError(
         `Could not find product ${checkInexistentProducts[0].id}.`,
@@ -40,39 +54,47 @@ export class CreateOrderService {
       );
     }
 
-    const quantityAvailable = products.filter((product) => {
-      existsProducts.filter(
-        (productExisten) => productExisten.id === product.id,
-      )[0].quantity < product.quantity;
-    });
+    // video 3
+    const quantityAvailable = products.filter(
+      product =>
+        existsProducts.filter(p => p.id === product.id)[0].quantity <
+        product.quantity,
+    );
 
     if (quantityAvailable.length) {
-      throw new AppError(`The quantity is not available.`, 409);
+      throw new AppError(
+        `The quantity ${quantityAvailable[0].quantity}
+         is not available for ${quantityAvailable[0].id}.`,
+        409,
+      );
     }
 
-    const serializedProducts = products.map((product) => ({
+    // video 4
+    const serializedProducts = products.map(product => ({
       product_id: product.id,
       quantity: product.quantity,
-      price: existsProducts.filter((p) => p.id === product.id)[0].price,
+      price: existsProducts.filter(p => p.id === product.id)[0].price,
     }));
 
-    const order = await orderRepositories.createOrder({
+    const order = await this.ordersRepository.create({
       customer: customerExists,
       products: serializedProducts,
     });
 
+    // video 5
     const { order_products } = order;
 
-    // Observe abaixo que o map tem um objeto com id e quantity, por isso tem as chaves
-    const updateProductQuantity = order_products.map((product) => ({
+    const updatedProductQuantity = order_products.map(product => ({
       id: product.product_id,
       quantity:
-        existsProducts.filter((p) => p.id === product.product_id)[0].quantity -
+        existsProducts.filter(p => p.id === product.product_id)[0].quantity -
         product.quantity,
     }));
 
-    await productsRepositories.save(updateProductQuantity);
+    await this.productsRepository.updateStock(updatedProductQuantity);
 
     return order;
   }
 }
+
+export default CreateOrderService;
